@@ -16,7 +16,7 @@ const HomeScreen = () => {
       <Image
         source={{
           uri: IMG.LOGO,
-          // uri: 'https://www.chachinggroup.com/blog/wp-content/uploads/2016/07/logo-design-in-Thailand.jpg',
+         
         }}
         style={{
           width: 200,
@@ -33,11 +33,11 @@ const HomeScreen = () => {
         <View
           style={{
             padding: 20,
-            backgroundColor: 'green',
+            backgroundColor: 'black',
             borderRadius: 20,
           }}
         >
-          <Text style={{ fontSize: 40, color: 'white' }}>
+          <Text style={{ fontSize: 10, color: 'white' }}>
             GO TO PROFILE SCREEN
           </Text>
         </View>
