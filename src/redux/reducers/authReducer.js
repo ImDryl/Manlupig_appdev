@@ -1,39 +1,56 @@
 import {
-  LOGIN_REQUEST,
-  LOGIN_SUCCESS,
-  LOGIN_FAILURE,
+  USER_LOGIN,
+  USER_LOGIN_COMPLETED,
+  USER_LOGIN_ERROR,
+  USER_LOGIN_REQUEST,
+  USER_LOGIN_RESET,
 } from '../actions/authActions';
 
-const initialState = {
-  token: null,
-  loading: false,
-  error: null,
+const INITIAL_STATE = {
+  data: null,
+  isLoading: false,
+  isError: false,
 };
 
-const authReducer = (state = initialState, action) => {
-    console.log(action.type);
+export default function reducer(state = INITIAL_STATE, action) {
+  console.log(action.type);
   switch (action.type) {
-    case LOGIN_REQUEST:
+    case USER_LOGIN_REQUEST:
       return {
         ...state,
-        loading: true,
-        error: null,
+        data: null,
+        isLoading: true,
+        isError: false,
       };
-    case LOGIN_SUCCESS:
+
+    case USER_LOGIN_COMPLETED:
       return {
         ...state,
-        loading: false,
-        token: action.payload,
+        data: action.payload,
+        isLoading: false,
+        isError: false,
       };
-    case LOGIN_FAILURE:
+
+    case USER_LOGIN_ERROR:
       return {
-        ...state,
-        loading: false,
-        error: action.payload,
+        data: null,
+        isLoading: false,
+        isError: true,
       };
+
+    case USER_LOGIN_RESET:
+      return INITIAL_STATE;
+
     default:
       return state;
   }
-};
+}
 
-export default authReducer;
+export const userLogin = payload => ({
+  type: USER_LOGIN,
+  payload,
+});
+
+export const resetLogin = () => ({
+  type: USER_LOGIN_RESET,
+});

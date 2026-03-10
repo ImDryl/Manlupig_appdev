@@ -1,49 +1,48 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  LOGIN_REQUEST,
+  USER_LOGIN_REQUEST,
   loginSuccess,
   loginFailure,
 } from '../actions/authActions';
 
-// 1. The API Call to your Symfony Handsona/AgriNest project
+// 1. The API Call
 const loginApi = async credentials => {
-  // IMPORTANT: 10.0.2.2 is the alias for your PC's localhost in Android Emulators
-  const response = await fetch (
-    'http://10.0.2.2:8000/api/login_check',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    }
-  );
+  const response = await fetch('http://10.0.2.2:8000/api/login_check', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credentials),
+  });
+
   const data = await response.json();
-  return data; // Should return { token: "eyJ..." }
+
+  // Force an error if the password is wrong (401 Unauthorized) so the Saga doesn't get stuck
+  if (!response.ok) {
+    throw new Error(data.message || 'Invalid username or password');
+  }
+
+  return data;
 };
 
 // 2. The Worker Saga
 function* handleLogin(action) {
   try {
-    // Call the API and wait for the response
     const data = yield call(loginApi, action.payload);
 
-    // Save the token to local storage so the user stays logged in
     yield call([AsyncStorage, 'setItem'], 'userToken', data.token);
 
-    // Update the Redux state with the new token
+    // This will trigger your reducer and print: USER_LOGIN_COMPLETED
     yield put(loginSuccess(data.token));
   } catch (error) {
-    // Handle errors (like 401 Unauthorized)
-    const message =
-      error.response?.data?.message ||
-      'Login failed. Please check your connection.';
-    yield put(loginFailure(message));
+    // This will trigger your reducer and print: USER_LOGIN_ERROR
+    yield put(loginFailure(error.message));
   }
 }
 
 // 3. The Watcher Saga
 export default function* watchAuth() {
-  yield takeLatest(LOGIN_REQUEST, handleLogin);
+  // Fixed: Now correctly listening for the USER_LOGIN_REQUEST action
+  yield takeLatest(USER_LOGIN_REQUEST, handleLogin);
 }
