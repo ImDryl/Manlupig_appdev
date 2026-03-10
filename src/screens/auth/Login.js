@@ -6,18 +6,43 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator, // Added for the loading spinner
 } from 'react-native';
+// 1. Import Redux hooks and your classic action
+import { useDispatch, useSelector } from 'react-redux';
+import { loginRequest } from '../../redux/actions/authActions';
 
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // This is where you will eventually connect to your backend
-    console.log('Login Attempt:', email);
+  // 2. Initialize Dispatch and grab state from the Vault
+  const dispatch = useDispatch();
+  const { loading, error, token } = useSelector(state => state.auth);
 
-    //  Home Screen
-    navigation.replace('Home');
+  // 3. Watch for the token. When it arrives, move to Home!
+  React.useEffect(() => {
+    if (token) {
+      navigation.replace('HomeScreen');
+    }
+  }, [token]);
+
+  // 4. Show an alert if the Saga reports a failure
+  React.useEffect(() => {
+    if (error) {
+      Alert.alert('Login Failed', error);
+    }
+  }, [error]);
+
+  const handleLogin = () => {
+    if (username.trim() === '' || password.trim() === '') {
+      Alert.alert('Hold up!', 'Please enter both your username and password.');
+      return;
+    }
+
+    // 5. Instead of AsyncStorage, we tell Redux to handle it!
+    // This triggers your Saga -> Axios -> Symfony
+    dispatch(loginRequest({ username, password }));
   };
 
   return (
@@ -28,11 +53,11 @@ export default function Login({ navigation }) {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
           autoCapitalize="none"
-          keyboardType="email-address"
+          editable={!loading} // Disable while loading
         />
         <TextInput
           style={styles.input}
@@ -40,11 +65,21 @@ export default function Login({ navigation }) {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          editable={!loading} // Disable while loading
         />
       </View>
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Log In</Text>
+      <TouchableOpacity
+        style={[styles.loginButton, loading && { opacity: 0.7 }]}
+        onPress={handleLogin}
+        disabled={loading}
+      >
+        {/* 6. Show a spinner if we are waiting for Symfony */}
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.loginButtonText}>Log In</Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.footer}>
@@ -57,6 +92,7 @@ export default function Login({ navigation }) {
   );
 }
 
+// ... (Your styles remain exactly the same)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -81,7 +117,7 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
   },
   loginButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#c27100', // Your nice orange/gold color
     padding: 18,
     borderRadius: 10,
     alignItems: 'center',
