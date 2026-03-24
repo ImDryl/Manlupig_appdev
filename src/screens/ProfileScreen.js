@@ -7,24 +7,25 @@ import {
   Alert,
   DevSettings,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
 import { IMG } from '../utils';
+import { resetLogin } from '../redux/reducers/authReducer';
 
 const ProfileScreen = () => {
+  const dispatch = useDispatch();
+
   // 1. The Logout Function
-  const handleLogout = async () => {
-    try {
-      // Tear up the VIP ticket in the phone's memory
-      await AsyncStorage.removeItem('userToken');
-
-      Alert.alert('Logged Out', 'You have been securely logged out.');
-
-      // Instantly refresh the app to trigger the Gatekeeper in index.js
-      DevSettings.reload();
-    } catch (error) {
-      console.log('Error clearing token:', error);
-      Alert.alert('Error', 'There was a problem logging out.');
-    }
+  const handleLogout = () => {
+    Alert.alert('Confirm Logout', 'Are you sure you want to log out?', [
+      { text: 'Cancel', onPress: () => {}, style: 'cancel' },
+      {
+        text: 'Logout',
+        onPress: () => {
+          dispatch(resetLogin());
+        },
+        style: 'destructive',
+      },
+    ]);
   };
 
   return (
@@ -50,11 +51,10 @@ const ProfileScreen = () => {
         ProfileScreen
       </Text>
 
-     
       <TouchableOpacity
         onPress={handleLogout}
         style={{
-          backgroundColor: '#ff3b30', 
+          backgroundColor: '#ff3b30',
           paddingHorizontal: 40,
           paddingVertical: 12,
           borderRadius: 8,

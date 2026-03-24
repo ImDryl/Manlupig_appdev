@@ -1,14 +1,9 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  USER_LOGIN_REQUEST,
-  loginSuccess,
-  loginFailure,
-} from '../actions/authActions';
+import * as Type from '../actions/authActions';
 
 // 1. The API Call
 const loginApi = async credentials => {
-  const response = await fetch('http://10.0.2.2:8000/api/login_check', {
+  const response = await fetch('http://10.0.2.2:8000/api/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -18,7 +13,7 @@ const loginApi = async credentials => {
 
   const data = await response.json();
 
-  // Force an error if the password is wrong (401 Unauthorized) so the Saga doesn't get stuck
+  // Force an error if the password is wrong
   if (!response.ok) {
     throw new Error(data.message || 'Invalid username or password');
   }
@@ -26,23 +21,23 @@ const loginApi = async credentials => {
   return data;
 };
 
-// 2. The Worker Saga
+// 2. Login Saga
 function* handleLogin(action) {
+  yield put({ type: Type.USER_LOGIN_REQUEST }); 
+
   try {
     const data = yield call(loginApi, action.payload);
 
-    yield call([AsyncStorage, 'setItem'], 'userToken', data.token);
-
-    // This will trigger your reducer and print: USER_LOGIN_COMPLETED
-    yield put(loginSuccess(data.token));
+    // print: USER_LOGIN_COMPLETED
+    yield put({ type: Type.USER_LOGIN_COMPLETED, payload: data });
   } catch (error) {
-    // This will trigger your reducer and print: USER_LOGIN_ERROR
-    yield put(loginFailure(error.message));
+    // print: USER_LOGIN_ERROR
+    yield put({ type: Type.USER_LOGIN_ERROR, payload: error.message });
   }
 }
 
-// 3. The Watcher Saga
+// 4. The Watcher Saga
 export default function* watchAuth() {
-  // Fixed: Now correctly listening for the USER_LOGIN_REQUEST action
-  yield takeLatest(USER_LOGIN_REQUEST, handleLogin);
+
+  yield takeLatest(Type.USER_LOGIN, handleLogin);
 }

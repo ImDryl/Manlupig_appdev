@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
-import authReducer from './authReducer'; // Your traditional reducer
+import authReducer from './authReducer'; 
 
 const rootReducer = combineReducers({
   auth: authReducer,
-  // You can add more reducers here later (like events, venues, etc.)
+  
 });
 
 export default rootReducer;

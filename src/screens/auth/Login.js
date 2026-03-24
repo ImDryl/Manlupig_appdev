@@ -10,25 +10,18 @@ import {
   Image,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginRequest } from '../../redux/actions/authActions';
 import { IMG } from '../../utils';
+import { userLogin } from '../../redux/reducers/authReducer';
 
 export default function Login({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  // 2. Updated variables to match authReducer.js exactly!
+  // Updated variables to match authReducer.js exactly!
   const dispatch = useDispatch();
   const { isLoading, isError, data } = useSelector(state => state.auth);
 
-  // 3. Watch for 'data' (which holds your token). When it arrives, move to Home!
-  React.useEffect(() => {
-    if (data) {
-      navigation.replace('HomeScreen');
-    }
-  }, [data]);
-
-  // 4. Show an alert if the Saga reports an error
+  // Show an alert if the Saga reports an error
   React.useEffect(() => {
     if (isError) {
       Alert.alert('Login Failed', 'Please check your username and password.');
@@ -41,8 +34,8 @@ export default function Login({ navigation }) {
       return;
     }
 
-    // 5. Trigger your Saga
-    dispatch(loginRequest({ username, password }));
+    // trigger Saga
+    dispatch(userLogin({ username, password }));
   };
 
   return (
@@ -60,7 +53,7 @@ export default function Login({ navigation }) {
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
-            editable={!isLoading} // Updated to isLoading
+            editable={!isLoading} 
           />
         </View>
 
@@ -72,16 +65,16 @@ export default function Login({ navigation }) {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
-            editable={!isLoading} // Updated to isLoading
+            editable={!isLoading} 
           />
         </View>
 
         <TouchableOpacity
-          style={[styles.loginButton, isLoading && { opacity: 0.7 }]} // Updated to isLoading
+          style={[styles.loginButton, isLoading && { opacity: 0.7 }]} 
           onPress={handleLogin}
-          disabled={isLoading} // Updated to isLoading
+          disabled={isLoading} 
         >
-          {isLoading ? ( // Updated to isLoading
+          {isLoading ? ( 
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={styles.loginButtonText}>Log In</Text>
@@ -130,6 +123,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.03,
     shadowRadius: 6,
     elevation: 2,
+    color: '#000',
   },
   loginButton: {
     backgroundColor: '#c27100',

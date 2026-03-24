@@ -16,9 +16,9 @@ export default function Register({ navigation }) {
   const [password, setPassword] = useState('');
 
   const handleRegister = () => {
-    // Logic for registration goes here
+    // Logic for registration 
     console.log('Registering:', name);
-    // After sign up, go back to Login
+    // After sign up
     navigation.navigate('Login');
   };
 

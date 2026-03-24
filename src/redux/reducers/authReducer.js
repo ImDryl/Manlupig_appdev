@@ -1,10 +1,4 @@
-import {
-  USER_LOGIN,
-  USER_LOGIN_COMPLETED,
-  USER_LOGIN_ERROR,
-  USER_LOGIN_REQUEST,
-  USER_LOGIN_RESET,
-} from '../actions/authActions';
+import * as Type from '../actions/authActions';
 
 const INITIAL_STATE = {
   data: null,
@@ -14,8 +8,9 @@ const INITIAL_STATE = {
 
 export default function reducer(state = INITIAL_STATE, action) {
   console.log(action.type);
+
   switch (action.type) {
-    case USER_LOGIN_REQUEST:
+    case Type.USER_LOGIN_REQUEST:
       return {
         ...state,
         data: null,
@@ -23,7 +18,7 @@ export default function reducer(state = INITIAL_STATE, action) {
         isError: false,
       };
 
-    case USER_LOGIN_COMPLETED:
+    case Type.USER_LOGIN_COMPLETED:
       return {
         ...state,
         data: action.payload,
@@ -31,15 +26,20 @@ export default function reducer(state = INITIAL_STATE, action) {
         isError: false,
       };
 
-    case USER_LOGIN_ERROR:
+    case Type.USER_LOGIN_ERROR:
       return {
         data: null,
         isLoading: false,
         isError: true,
       };
 
-    case USER_LOGIN_RESET:
-      return INITIAL_STATE;
+    case Type.USER_LOGIN_RESET:
+      return {
+        ...state,
+        data: null,
+        isLoading: false,
+        isError: false,
+      };
 
     default:
       return state;
@@ -47,10 +47,10 @@ export default function reducer(state = INITIAL_STATE, action) {
 }
 
 export const userLogin = payload => ({
-  type: USER_LOGIN,
+  type: Type.USER_LOGIN,
   payload,
 });
 
 export const resetLogin = () => ({
-  type: USER_LOGIN_RESET,
+  type: Type.USER_LOGIN_RESET,
 });
