@@ -8,7 +8,12 @@ const options = {
   },
 };
 
-export async function authLogin({ username, password }) {
+type LoginPayload = {
+  username: string;
+  password: string;
+};
+
+export async function authLogin({ username, password }: LoginPayload) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), LOGIN_TIMEOUT_MS);
 
@@ -23,11 +28,14 @@ export async function authLogin({ username, password }) {
       }),
       signal: controller.signal,
     });
-  } catch (error) {
-    if (error.name === 'AbortError') {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('Server timeout. Check BASE_URL and API server.');
     }
-    throw new Error(error.message || 'Network request failed');
+    if (error instanceof Error) {
+      throw new Error(error.message || 'Network request failed');
+    }
+    throw new Error('Network request failed');
   } finally {
     clearTimeout(timeoutId);
   }
