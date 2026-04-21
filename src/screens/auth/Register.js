@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   Image,
 } from 'react-native';
 
 import { IMG } from '../../utils';
+import CustomButton from '../../components/CustomButton';
+import CustomTextInput from '../../components/CustomTextInput';
 
 export default function Register({ navigation }) {
   const [name, setName] = useState('');
@@ -29,45 +30,32 @@ export default function Register({ navigation }) {
       <Text style={styles.subHeader}>Join us today!</Text>
 
       <View style={styles.card}>
-        <View style={styles.field}>
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput
-            style={styles.input}
-            placeholder=""
-            value={name}
-            onChangeText={setName}
-          />
-        </View>
+        <CustomTextInput
+          label="Full Name"
+          value={name}
+          onChangeText={setName}
+        />
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder=""
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
+        <CustomTextInput
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder=""
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
+        <CustomTextInput
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
 
-        <TouchableOpacity
-          style={styles.registerButton}
+        <CustomButton
+          label="Sign Up"
           onPress={handleRegister}
-        >
-          <Text style={styles.registerButtonText}>Sign Up</Text>
-        </TouchableOpacity>
+          containerStyle={styles.registerButton}
+        />
 
         <View style={styles.footerInline}>
           <Text style={styles.footerText}>Already have an account? </Text>
@@ -95,27 +83,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   subHeader: { fontSize: 16, color: '#666', marginBottom: 40 },
-  inputContainer: { marginBottom: 20 },
-  input: {
-    backgroundColor: '#fff',
-    padding: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e6e6e6',
-    shadowColor: '#000',
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
-  },
   registerButton: {
-    backgroundColor: '#c27100',
-    padding: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    width: '100%',
     marginTop: 8,
   },
-  registerButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 30 },
   footerInline: {
     flexDirection: 'row',
@@ -144,14 +114,5 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 420,
     alignSelf: 'center',
-  },
-  field: {
-    marginBottom: 12,
-  },
-  label: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 6,
-    marginLeft: 4,
   },
 });

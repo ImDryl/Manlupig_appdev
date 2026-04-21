@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native'; 
-import { createStackNavigator } from '@react-navigation/stack'; 
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { useSelector } from 'react-redux';
 import AuthNav from './AuthNav';
 import MainNav from './MainNav';
@@ -9,18 +8,9 @@ import MainNav from './MainNav';
 const Stack = createStackNavigator();
 
 export default function AppNav() {
-  
-  const { data, isLoading } = useSelector(
-    state => state.auth || { data: null, isLoading: false },
+  const { data } = useSelector(
+    state => state.auth || { data: null },
   );
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#c27100" />
-      </View>
-    );
-  }
 
   return (
     <NavigationContainer>

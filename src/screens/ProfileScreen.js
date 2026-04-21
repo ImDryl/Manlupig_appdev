@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { IMG } from '../utils';
-import { resetLogin } from '../redux/reducers/authReducer';
+import { resetLogin } from '../app/reducers/auth';
 
 const ProfileScreen = () => {
   const dispatch = useDispatch();
@@ -68,5 +68,8 @@ const ProfileScreen = () => {
     </View>
   );
 };
+
+
+
 
 export default ProfileScreen;

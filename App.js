@@ -1,20 +1,30 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { View } from 'react-native';
-
-// 1. Import the Redux Provider and your custom Store
+import { ActivityIndicator, View } from 'react-native';
 import { Provider } from 'react-redux';
-import store from './src/redux/store';
-
+import { PersistGate } from 'redux-persist/integration/react';
+import configureAppStore from './src/app/reducers';
+import rootSaga from './src/app/sagas';
 import AppNav from './src/navigations';
+
+const { store, persistor, runSaga } = configureAppStore();
+runSaga(rootSaga);
 
 const App = () => {
   return (
-    // 2. Wrap your entire app inside the Provider so every screen can access the vault
     <Provider store={store}>
-      <View style={{ flex: 1 }}>
-        <AppNav />
-      </View>
+      <PersistGate
+        loading={
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color="#c27100" />
+          </View>
+        }
+        persistor={persistor}
+      >
+        <View style={{ flex: 1 }}>
+          <AppNav />
+        </View>
+      </PersistGate>
     </Provider>
   );
 };

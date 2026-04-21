@@ -12,7 +12,7 @@ import { ROUTES } from '../utils';
 
 const Stack = createStackNavigator();
 
-// AuthNav.js
+// AuthNav.js into .tsx
 function AuthNav() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

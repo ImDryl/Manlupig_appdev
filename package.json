@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "reverse": "adb reverse tcp:8000 tcp:8000",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
@@ -20,6 +21,7 @@
     "react-native-safe-area-context": "^5.6.2",
     "react-native-screens": "^4.23.0",
     "react-redux": "^9.2.0",
+    "redux-persist": "^6.0.0",
     "redux-saga": "^1.4.2"
   },
   "devDependencies": {

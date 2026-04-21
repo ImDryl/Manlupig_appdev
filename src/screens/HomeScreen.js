@@ -1,7 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { IMG, ROUTES } from '../utils';
+import CustomButton from '../components/CustomButton';
+// import CustomCard from '../components/CustomCard';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -16,34 +18,24 @@ const HomeScreen = () => {
       <Image
         source={{
           uri: IMG.LOGO,
-         
         }}
         style={{
           width: 200,
           height: 200,
         }}
       />
-      <Text>HomeScreen</Text>
 
-      <TouchableOpacity
+      {/* <CustomCard/> */}
+
+      <CustomButton
+        label="Go to Profile"
         onPress={() => {
           navigation.navigate(ROUTES.PROFILE);
         }}
-      >
-        <View
-          style={{
-            padding: 20,
-            backgroundColor: 'black',
-            borderRadius: 20,
-          }}
-        >
-          <Text style={{ fontSize: 10, color: 'white' }}>
-            GO TO PROFILE SCREEN
-          </Text>
-        </View>
-      </TouchableOpacity>
+      />
     </View>
   );
 };
 
 export default HomeScreen;
+
