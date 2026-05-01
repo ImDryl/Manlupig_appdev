@@ -4,22 +4,34 @@ import {
   USER_LOGIN_ERROR,
   USER_LOGIN_REQUEST,
   USER_LOGIN_RESET,
+  type AuthAction,
+  type LoginPayload,
+  type UserLoginAction,
+  type UserLoginResetAction,
 } from '../actions';
 
-//initialize data / default value
-const INITIAL_STATE = {
+export type AuthState = {
+  data: unknown;
+  isLoading: boolean;
+  isError: boolean;
+  errorMessage: string | null;
+};
+
+const INITIAL_STATE: AuthState = {
   data: null,
   isLoading: false,
   isError: false,
   errorMessage: null,
 };
 
-export default function reducer(state = INITIAL_STATE, action) {
-  console.log(action.type);
+export default function authReducer(
+  state: AuthState = INITIAL_STATE,
+  action: AuthAction,
+): AuthState {
   switch (action.type) {
     case USER_LOGIN_REQUEST:
       return {
-        ...state,    //extended variable or spread operator
+        ...state,
         data: null,
         isLoading: true,
         isError: false,
@@ -29,7 +41,7 @@ export default function reducer(state = INITIAL_STATE, action) {
     case USER_LOGIN_COMPLETED:
       return {
         ...state,
-        data: action.payload, //put ? after action, "action? response," for optional 
+        data: action.payload,
         isLoading: false,
         isError: false,
         errorMessage: null,
@@ -52,11 +64,11 @@ export default function reducer(state = INITIAL_STATE, action) {
   }
 }
 
-export const userLogin = payload => ({
+export const userLogin = (payload: LoginPayload): UserLoginAction => ({
   type: USER_LOGIN,
   payload,
 });
 
-export const resetLogin = () => ({
+export const resetLogin = (): UserLoginResetAction => ({
   type: USER_LOGIN_RESET,
 });

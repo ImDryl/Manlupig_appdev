@@ -4,13 +4,17 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { useSelector } from 'react-redux';
 import AuthNav from './AuthNav';
 import MainNav from './MainNav';
+import type { RootState } from '../app/reducers';
 
-const Stack = createStackNavigator();
+type AppStackParamList = {
+  Main: undefined;
+  Auth: undefined;
+};
+
+const Stack = createStackNavigator<AppStackParamList>();
 
 export default function AppNav() {
-  const { data } = useSelector(
-    state => state.auth || { data: null },
-  );
+  const data = useSelector((state: RootState) => state.auth?.data ?? null);
 
   return (
     <NavigationContainer>

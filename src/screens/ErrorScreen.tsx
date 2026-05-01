@@ -1,9 +1,16 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import type { StackScreenProps } from '@react-navigation/stack';
 
-export default function ErrorScreen({ navigation, route }) {
-    const message = route?.params?.message || 'Something went wrong.';
-    
+export type ErrorStackParamList = {
+  ErrorScreen: { message?: string } | undefined;
+  Home: undefined;
+};
+
+type Props = StackScreenProps<ErrorStackParamList, 'ErrorScreen'>;
+
+export default function ErrorScreen({ navigation, route }: Props) {
+  const message = route.params?.message ?? 'Something went wrong.';
 
   return (
     <View style={styles.container}>
@@ -12,7 +19,7 @@ export default function ErrorScreen({ navigation, route }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.replace('Home')} // go back to home
+        onPress={() => navigation.replace('Home')}
       >
         <Text style={styles.buttonText}>Go Back Home</Text>
       </TouchableOpacity>

@@ -1,20 +1,12 @@
 import React from 'react';
-import {
-  Image,
-  Text,
-  View,
-  TouchableOpacity,
-  Alert,
-  DevSettings,
-} from 'react-native';
+import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { IMG } from '../utils';
 import { resetLogin } from '../app/reducers/auth';
 
-const ProfileScreen = () => {
+const ProfileScreen: React.FC = () => {
   const dispatch = useDispatch();
 
-  // 1. The Logout Function
   const handleLogout = () => {
     Alert.alert('Confirm Logout', 'Are you sure you want to log out?', [
       { text: 'Cancel', onPress: () => {}, style: 'cancel' },
@@ -68,8 +60,5 @@ const ProfileScreen = () => {
     </View>
   );
 };
-
-
-
 
 export default ProfileScreen;

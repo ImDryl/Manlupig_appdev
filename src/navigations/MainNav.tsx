@@ -1,14 +1,10 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-
-// Screens
-import HomeScreen from '../screens/HomeScreen';
+import HomeScreen, { type MainStackParamList } from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-
-// Utils
 import { ROUTES } from '../utils';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<MainStackParamList>();
 
 function MainNav() {
   return (

@@ -6,20 +6,30 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
 import { IMG } from '../../utils';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomTextInput';
 
-export default function Register({ navigation }) {
+type AuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
+};
+
+type RegisterNavigationProp = StackNavigationProp<AuthStackParamList, 'Register'>;
+
+type RegisterProps = {
+  navigation: RegisterNavigationProp;
+};
+
+export default function Register({ navigation }: RegisterProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleRegister = () => {
-    // Logic for registration 
     console.log('Registering:', name);
-    // After sign up
     navigation.navigate('Login');
   };
 
@@ -101,7 +111,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 12,
   },
-  /* card around form */
   card: {
     backgroundColor: '#fff',
     padding: 18,

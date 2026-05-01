@@ -46,4 +46,4 @@ export async function authLogin({ username, password }: LoginPayload) {
     return data;
   }
   throw new Error(data.message || 'Login failed');
-}
+  }

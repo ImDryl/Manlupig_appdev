@@ -10,7 +10,7 @@ import AppNav from './src/navigations';
 const { store, persistor, runSaga } = configureAppStore();
 runSaga(rootSaga);
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <Provider store={store}>
       <PersistGate

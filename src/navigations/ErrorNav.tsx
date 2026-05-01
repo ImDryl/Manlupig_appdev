@@ -1,9 +1,11 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import ErrorScreen from '../screens/ErrorScreen';
+import ErrorScreen, {
+  type ErrorStackParamList,
+} from '../screens/ErrorScreen';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<ErrorStackParamList>();
 
 export default function ErrorNav() {
   return (
