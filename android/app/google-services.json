@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "844470069577",
+    "project_id": "appdevmanlupig",
+    "storage_bucket": "appdevmanlupig.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:844470069577:android:f94a72477746ecdf71d298",
+        "android_client_info": {
+          "package_name": "com.manlupig"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "844470069577-gqgte23i91i212f3up4m6j5cqjck31lt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.manlupig",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "844470069577-g2mcsv5orb4i1p2gj9m4ldmcvn4hnu0i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACaXxGFQy_qMlzKZqDcdMTR68OIpnnpTY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "844470069577-g2mcsv5orb4i1p2gj9m4ldmcvn4hnu0i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
