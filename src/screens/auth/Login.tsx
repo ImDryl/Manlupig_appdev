@@ -8,10 +8,13 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { IMG } from '../../utils';
+import { USER_LOGIN_COMPLETED } from '../../app/actions';
 import { userLogin } from '../../app/reducers/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomTextInput';
+import { GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import { _signInwithGoogle } from '../../utils/firebase';
 
 // rename into tsx
 // fix errors
@@ -54,6 +57,20 @@ const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
     dispatch(userLogin({ username: username.trim(), password }));
   };
 
+  const handleGoogleLogin = async () => {
+    const result = await _signInwithGoogle();
+    if (result.ok) {
+      dispatch({
+        type: USER_LOGIN_COMPLETED,
+        payload: { provider: 'google', user: result.userInfo },
+      });
+      return;
+    }
+    if (!result.cancelled) {
+      Alert.alert('Google sign-in', result.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image source={{ uri: IMG.LOGO }} style={styles.logo} />
@@ -81,6 +98,13 @@ const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
           label="Log In"
           onPress={handleLogin}
           loading={isLoading}
+        />
+
+        <GoogleSigninButton
+          style={styles.googleSignInButton}
+          size={GoogleSigninButton.Size.Standard}
+          color={GoogleSigninButton.Color.Light}
+          onPress={handleGoogleLogin}
         />
 
         <View style={styles.footerInline}>
@@ -143,5 +167,8 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 420,
     alignSelf: 'center',
+  },
+  googleSignInButton: {
+    marginTop: 10,
   },
 });
