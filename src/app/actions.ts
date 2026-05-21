@@ -3,6 +3,8 @@ export const USER_LOGIN_REQUEST = 'USER_LOGIN_REQUEST' as const;
 export const USER_LOGIN_COMPLETED = 'USER_LOGIN_COMPLETED' as const;
 export const USER_LOGIN_ERROR = 'USER_LOGIN_ERROR' as const;
 export const USER_LOGIN_RESET = 'USER_LOGIN_RESET' as const;
+export const AUTH_CLEAR_LOGIN_ERROR = 'AUTH_CLEAR_LOGIN_ERROR' as const;
+export const AUTH_CLEAR_REGISTER_ERROR = 'AUTH_CLEAR_REGISTER_ERROR' as const;
 
 export type LoginPayload = {
   email: string;
@@ -32,6 +34,14 @@ export type UserLoginResetAction = {
   type: typeof USER_LOGIN_RESET;
 };
 
+export type AuthClearLoginErrorAction = {
+  type: typeof AUTH_CLEAR_LOGIN_ERROR;
+};
+
+export type AuthClearRegisterErrorAction = {
+  type: typeof AUTH_CLEAR_REGISTER_ERROR;
+};
+
 export const USER_GOOGLE_LOGIN = 'USER_GOOGLE_LOGIN' as const;
 
 export type GoogleLoginPayload = {
@@ -50,6 +60,8 @@ export type AuthAction =
   | UserLoginCompletedAction
   | UserLoginErrorAction
   | UserLoginResetAction
+  | AuthClearLoginErrorAction
+  | AuthClearRegisterErrorAction
   | UserRegisterAction
   | UserRegisterRequestAction
   | UserRegisterCompletedAction

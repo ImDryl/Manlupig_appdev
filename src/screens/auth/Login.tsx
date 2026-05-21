@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Text,
   View,
   Image,
-  Alert,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { IMG, ROUTES } from '../../utils';
-import { userGoogleLogin, userLogin } from '../../app/reducers/auth';
+import { IMG, ROUTES, showError, showInfo } from '../../utils';
+import {
+  clearLoginError,
+  userGoogleLogin,
+  userLogin,
+} from '../../app/reducers/auth';
 import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '../../app/reducers';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomTextInput';
 import GoogleSignInButton from '../../components/GoogleSignInButton';
@@ -22,20 +26,26 @@ const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const { isLoading, isError, errorMessage } = useSelector(
-    (state: any) => state.auth,
+    (state: RootState) => state.auth,
   );
 
   const busy = isLoading || googleLoading;
+  const lastErrorRef = useRef<string | null>(null);
 
-  React.useEffect(() => {
-    if (isError && errorMessage) {
-      Alert.alert('Login Failed', errorMessage);
+  useEffect(() => {
+    if (isError && errorMessage && errorMessage !== lastErrorRef.current) {
+      lastErrorRef.current = errorMessage;
+      showError('Login Failed', errorMessage);
+      dispatch(clearLoginError());
     }
-  }, [isError, errorMessage]);
+    if (!isError) {
+      lastErrorRef.current = null;
+    }
+  }, [isError, errorMessage, dispatch]);
 
   const handleLogin = () => {
     if (email.trim() === '' || password.trim() === '') {
-      Alert.alert('Hold up!', 'Please enter your email and password.');
+      showInfo('Hold up!', 'Please enter your email and password.');
       return;
     }
 
@@ -56,12 +66,12 @@ const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
         return;
       }
       if (!result.cancelled) {
-        Alert.alert('Google sign-in', result.message);
+        showError('Google Sign-In', result.message);
       }
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : 'Google sign-in failed';
-      Alert.alert('Google sign-in', message);
+      showError('Google Sign-In', message);
     } finally {
       setGoogleLoading(false);
     }

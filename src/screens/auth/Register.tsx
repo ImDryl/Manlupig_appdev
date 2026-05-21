@@ -1,19 +1,16 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Alert,
-} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { IMG } from '../../utils';
+import { IMG, ROUTES, showError, showInfo, showSuccess } from '../../utils';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomTextInput';
-import { resetRegister, userRegister } from '../../app/reducers/auth';
+import {
+  clearRegisterError,
+  resetRegister,
+  userRegister,
+} from '../../app/reducers/auth';
 import type { RootState } from '../../app/reducers';
 
 type AuthStackParamList = {
@@ -21,7 +18,10 @@ type AuthStackParamList = {
   Register: undefined;
 };
 
-type RegisterNavigationProp = StackNavigationProp<AuthStackParamList, 'Register'>;
+type RegisterNavigationProp = StackNavigationProp<
+  AuthStackParamList,
+  'Register'
+>;
 
 type RegisterProps = {
   navigation: RegisterNavigationProp;
@@ -35,30 +35,27 @@ export default function Register({ navigation }: RegisterProps) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const dispatch = useDispatch();
-  const {
-    isRegistering,
-    isRegisterSuccess,
-    registerError,
-    registerMessage,
-  } = useSelector((state: RootState) => state.auth);
+  const { isRegistering, isRegisterSuccess, registerError, registerMessage } =
+    useSelector((state: RootState) => state.auth);
+  const lastRegisterErrorRef = useRef<string | null>(null);
 
-  React.useEffect(() => {
-    if (registerError) {
-      Alert.alert('Sign Up Failed', registerError);
+  useEffect(() => {
+    if (registerError && registerError !== lastRegisterErrorRef.current) {
+      lastRegisterErrorRef.current = registerError;
+      showError('Sign Up Failed', registerError);
+      dispatch(clearRegisterError());
     }
-  }, [registerError]);
+    if (!registerError) {
+      lastRegisterErrorRef.current = null;
+    }
+  }, [registerError, dispatch]);
 
   React.useEffect(() => {
     if (isRegisterSuccess && registerMessage) {
-      Alert.alert('Account Created', registerMessage, [
-        {
-          text: 'Go to Login',
-          onPress: () => {
-            dispatch(resetRegister());
-            navigation.navigate('Login');
-          },
-        },
-      ]);
+      showSuccess('Account Created', registerMessage, () => {
+        dispatch(resetRegister());
+        navigation.navigate(ROUTES.LOGIN);
+      });
     }
   }, [isRegisterSuccess, registerMessage, dispatch, navigation]);
 
@@ -71,25 +68,25 @@ export default function Register({ navigation }: RegisterProps) {
   const handleRegister = () => {
     const trimmedEmail = email.trim();
     if (!trimmedEmail || !password || !confirmPassword) {
-      Alert.alert('Hold up!', 'Please fill in email and both password fields.');
+      showInfo('Hold up!', 'Please fill in email and both password fields.');
       return;
     }
 
     if (!trimmedEmail.includes('@')) {
-      Alert.alert('Invalid email', 'Please enter a valid email address.');
+      showError('Invalid Email', 'Please enter a valid email address.');
       return;
     }
 
     if (password.length < MIN_PASSWORD_LENGTH) {
-      Alert.alert(
-        'Weak password',
+      showError(
+        'Weak Password',
         `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
       );
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Password mismatch', 'Passwords do not match.');
+      showError('Password Mismatch', 'Passwords do not match.');
       return;
     }
 
@@ -128,10 +125,6 @@ export default function Register({ navigation }: RegisterProps) {
           editable={!isRegistering}
         />
 
-        <Text style={styles.hint}>
-          App sign-up is verified automatically. You can log in right away.
-        </Text>
-
         <CustomButton
           label="Sign Up"
           onPress={handleRegister}
@@ -142,7 +135,7 @@ export default function Register({ navigation }: RegisterProps) {
         <View style={styles.footerInline}>
           <Text style={styles.footerText}>Already have an account? </Text>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate(ROUTES.LOGIN)}
             disabled={isRegistering}
           >
             <Text style={styles.linkText}>Log In</Text>
@@ -163,7 +156,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 32,
     fontWeight: 'bold',
-    alignItems: 'center',
     color: '#333',
     marginBottom: 5,
     textAlign: 'center',

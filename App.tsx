@@ -6,6 +6,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import configureAppStore from './src/app/reducers';
 import rootSaga from './src/app/sagas';
 import AppNav from './src/navigations';
+import { Toast, toastConfig } from './src/components/alertMsg';
 
 const { store, persistor, runSaga } = configureAppStore();
 runSaga(rootSaga);
@@ -23,6 +24,7 @@ const App: React.FC = () => {
       >
         <View style={{ flex: 1 }}>
           <AppNav />
+          <Toast config={toastConfig} />
         </View>
       </PersistGate>
     </Provider>

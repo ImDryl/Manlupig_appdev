@@ -4,6 +4,7 @@ import React from 'react';
 import { Image, View } from 'react-native';
 import { IMG, ROUTES } from '../utils';
 import CustomButton from '../components/CustomButton';
+import { useAuthAlerts } from '../hooks/useAuthAlerts';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -14,6 +15,8 @@ type HomeScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Home'>;
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
+  useAuthAlerts({ showLoginSuccess: true });
+
   return (
     <View
       style={{

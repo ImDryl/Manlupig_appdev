@@ -5,6 +5,8 @@ import {
   USER_LOGIN_ERROR,
   USER_LOGIN_REQUEST,
   USER_LOGIN_RESET,
+  AUTH_CLEAR_LOGIN_ERROR,
+  AUTH_CLEAR_REGISTER_ERROR,
   USER_REGISTER,
   USER_REGISTER_COMPLETED,
   USER_REGISTER_ERROR,
@@ -17,6 +19,8 @@ import {
   type UserGoogleLoginAction,
   type UserLoginAction,
   type UserLoginResetAction,
+  type AuthClearLoginErrorAction,
+  type AuthClearRegisterErrorAction,
   type UserRegisterAction,
   type UserRegisterResetAction,
 } from '../actions';
@@ -120,6 +124,19 @@ export default function authReducer(
         registerMessage: null,
       };
 
+    case AUTH_CLEAR_LOGIN_ERROR:
+      return {
+        ...state,
+        isError: false,
+        errorMessage: null,
+      };
+
+    case AUTH_CLEAR_REGISTER_ERROR:
+      return {
+        ...state,
+        registerError: null,
+      };
+
     default:
       return state;
   }
@@ -148,4 +165,12 @@ export const resetLogin = (): UserLoginResetAction => ({
 
 export const resetRegister = (): UserRegisterResetAction => ({
   type: USER_REGISTER_RESET,
+});
+
+export const clearLoginError = (): AuthClearLoginErrorAction => ({
+  type: AUTH_CLEAR_LOGIN_ERROR,
+});
+
+export const clearRegisterError = (): AuthClearRegisterErrorAction => ({
+  type: AUTH_CLEAR_REGISTER_ERROR,
 });
