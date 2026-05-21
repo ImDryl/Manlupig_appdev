@@ -69,6 +69,12 @@ const ProfileScreen: React.FC = () => {
 
   const menuItems: MenuItem[] = [
     {
+      key: 'orders',
+      label: 'My Orders',
+      hint: 'View order history and payment method',
+      onPress: () => navigation.navigate(ROUTES.ORDERS),
+    },
+    {
       key: 'shop',
       label: 'Continue Shopping',
       hint: 'Browse products and add to cart',

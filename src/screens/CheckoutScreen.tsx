@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   ScrollView,
@@ -11,8 +11,10 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { checkoutCart } from '../app/api/cart';
+import { fetchPaymentMethods } from '../app/api/payments';
 import CustomButton from '../components/CustomButton';
 import CustomTextInput from '../components/CustomTextInput';
+import PaymentMethodPicker from '../components/PaymentMethodPicker';
 import { useCart } from '../context/CartContext';
 import type { RootState } from '../app/reducers';
 import { colors } from '../theme/agrinest';
@@ -43,6 +45,34 @@ export default function CheckoutScreen() {
   const [email, setEmail] = useState(defaultEmail ?? '');
   const [phone, setPhone] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<
+    Awaited<ReturnType<typeof fetchPaymentMethods>>
+  >([]);
+  const [paymentMethodId, setPaymentMethodId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const methods = await fetchPaymentMethods();
+        if (cancelled) {
+          return;
+        }
+        setPaymentMethods(methods);
+      } catch {
+        if (!cancelled) {
+          setPaymentMethods([
+            { id: 'gcash', label: 'GCash', description: 'Demo payment' },
+            { id: 'cod', label: 'Cash on Delivery', description: 'Pay on delivery' },
+            { id: 'card', label: 'Credit / Debit Card', description: 'Demo payment' },
+          ]);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handlePlaceOrder = async () => {
     if (!token) {
@@ -55,12 +85,18 @@ export default function CheckoutScreen() {
       return;
     }
 
+    if (!paymentMethodId) {
+      showError('Checkout', 'Please select a payment method.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const result = await checkoutCart(token, {
         customer_name: name.trim(),
         customer_email: email.trim(),
         customer_phone: phone.trim(),
+        payment_method: paymentMethodId,
       });
       if (!result.success) {
         const msg =
@@ -70,7 +106,7 @@ export default function CheckoutScreen() {
       }
       await refreshCart();
       showSuccess('Order placed', result.message, () => {
-        navigation.navigate(ROUTES.SHOP);
+        navigation.navigate(ROUTES.ORDERS);
       });
     } catch (err: unknown) {
       showError(
@@ -137,6 +173,11 @@ export default function CheckoutScreen() {
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
+        />
+        <PaymentMethodPicker
+          methods={paymentMethods}
+          selectedId={paymentMethodId}
+          onSelect={setPaymentMethodId}
         />
         <CustomButton
           label="Place Order"

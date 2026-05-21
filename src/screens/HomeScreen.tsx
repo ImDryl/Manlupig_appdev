@@ -20,6 +20,9 @@ export type MainStackParamList = {
   Cart: undefined;
   Checkout: undefined;
   Profile: undefined;
+  Orders: undefined;
+  OrderDetail: { orderId: number };
+  ProductDetail: { productId: number };
 };
 
 type HomeScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Home'>;

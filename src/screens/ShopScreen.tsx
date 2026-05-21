@@ -277,7 +277,13 @@ export default function ShopScreen() {
         }
         renderItem={({ item }) => (
           <View style={styles.gridItem}>
-            <ProductCard product={item} onAddToCart={handleAddToCart} />
+            <ProductCard
+              product={item}
+              onAddToCart={handleAddToCart}
+              onViewDetails={productId =>
+                navigation.navigate(ROUTES.PRODUCT_DETAIL, { productId })
+              }
+            />
           </View>
         )}
       />

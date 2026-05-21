@@ -13,6 +13,7 @@ import type { ProductItem } from '../../types/product';
 type ProductCardProps = {
   product: ProductItem;
   onAddToCart?: (productId: number) => Promise<void>;
+  onViewDetails?: (productId: number) => void;
 };
 
 function formatPrice(price: number | null): string {
@@ -25,7 +26,11 @@ function formatPrice(price: number | null): string {
   })}`;
 }
 
-export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  onAddToCart,
+  onViewDetails,
+}: ProductCardProps) {
   const inStock = product.quantity > 0;
   const [adding, setAdding] = useState(false);
 
@@ -86,24 +91,35 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           </Text>
         </View>
 
-        {onAddToCart ? (
-          <TouchableOpacity
-            style={[
-              styles.addButton,
-              (!inStock || adding) && styles.addButtonDisabled,
-            ]}
-            onPress={handleAdd}
-            disabled={!inStock || adding}
-          >
-            {adding ? (
-              <ActivityIndicator color="#1a1308" size="small" />
-            ) : (
-              <Text style={styles.addButtonText}>
-                {inStock ? 'Add to Cart' : 'Unavailable'}
-              </Text>
-            )}
-          </TouchableOpacity>
-        ) : null}
+        <View style={styles.actions}>
+          {onViewDetails ? (
+            <TouchableOpacity
+              style={styles.detailsButton}
+              onPress={() => onViewDetails(product.id)}
+            >
+              <Text style={styles.detailsButtonText}>Details</Text>
+            </TouchableOpacity>
+          ) : null}
+          {onAddToCart ? (
+            <TouchableOpacity
+              style={[
+                styles.addButton,
+                onViewDetails && styles.addButtonHalf,
+                (!inStock || adding) && styles.addButtonDisabled,
+              ]}
+              onPress={handleAdd}
+              disabled={!inStock || adding}
+            >
+              {adding ? (
+                <ActivityIndicator color="#1a1308" size="small" />
+              ) : (
+                <Text style={styles.addButtonText}>
+                  {inStock ? 'Add to Cart' : 'Unavailable'}
+                </Text>
+              )}
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
     </View>
   );
@@ -191,11 +207,33 @@ const styles = StyleSheet.create({
   stockOutText: {
     color: colors.stockOutText,
   },
+  actions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  detailsButton: {
+    flex: 1,
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.brandBrown,
+    backgroundColor: '#fff',
+  },
+  detailsButtonText: {
+    color: colors.brandBrown,
+    fontWeight: '800',
+    fontSize: 13,
+  },
   addButton: {
+    flex: 1,
     backgroundColor: colors.gradientOrangeStart,
     borderRadius: 12,
     paddingVertical: 10,
     alignItems: 'center',
+  },
+  addButtonHalf: {
+    flex: 1,
   },
   addButtonDisabled: {
     backgroundColor: '#e8e8e8',

@@ -29,3 +29,16 @@ export async function fetchProducts(
     },
   };
 }
+
+export async function fetchProduct(id: number): Promise<ProductItem> {
+  const response = await getJson<{
+    success: boolean;
+    message: string;
+    data: ProductItem;
+  }>(`/products/${id}`);
+
+  return {
+    ...response.data,
+    imageUrl: resolveAssetUrl(response.data.imageUrl),
+  };
+}
