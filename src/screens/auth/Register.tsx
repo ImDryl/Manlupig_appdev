@@ -95,7 +95,7 @@ export default function Register({ navigation }: RegisterProps) {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: IMG.LOGO }} style={styles.logo} />
+      <Image source={IMG.LOGO} style={styles.logo} resizeMode="contain" />
       <Text style={styles.headerTitle}>Create Account</Text>
       <Text style={styles.subHeader}>Join us today!</Text>
 

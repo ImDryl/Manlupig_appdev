@@ -79,7 +79,7 @@ const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: IMG.LOGO }} style={styles.logo} />
+      <Image source={IMG.LOGO} style={styles.logo} resizeMode="contain" />
       <Text style={styles.headerTitle}>Welcome Back</Text>
       <Text style={styles.subHeader}>Sign in to continue</Text>
 

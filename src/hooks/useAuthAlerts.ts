@@ -1,21 +1,38 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../app/reducers';
 import { showSuccess } from '../utils/alert';
 
-/** Shows a welcome alert once after a successful login on Home. */
+/** Tracks welcome toast across Home mount/unmount (useRef alone resets each visit). */
+let loginWelcomeShownThisSession = false;
+
+export function resetLoginWelcomeAlert(): void {
+  loginWelcomeShownThisSession = false;
+}
+
+type AuthPayload = {
+  success?: boolean;
+  message?: string;
+  data?: { token?: string };
+};
+
+/** Shows welcome toast once after login, not on every Home visit. */
 export function useAuthAlerts(options?: { showLoginSuccess?: boolean }) {
-  const { data } = useSelector((state: RootState) => state.auth);
-  const loginSuccessShown = useRef(false);
+  const data = useSelector((state: RootState) => state.auth?.data);
 
   useEffect(() => {
-    if (!options?.showLoginSuccess || !data || loginSuccessShown.current) {
+    if (!data) {
+      loginWelcomeShownThisSession = false;
       return;
     }
 
-    const payload = data as { message?: string; success?: boolean };
+    if (!options?.showLoginSuccess || loginWelcomeShownThisSession) {
+      return;
+    }
+
+    const payload = data as AuthPayload;
     if (payload.success && payload.message) {
-      loginSuccessShown.current = true;
+      loginWelcomeShownThisSession = true;
       showSuccess('Welcome', payload.message);
     }
   }, [data, options?.showLoginSuccess]);

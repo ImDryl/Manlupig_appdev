@@ -7,6 +7,8 @@ import configureAppStore from './src/app/reducers';
 import rootSaga from './src/app/sagas';
 import AppNav from './src/navigations';
 import { Toast, toastConfig } from './src/components/alertMsg';
+import { CartProvider } from './src/context/CartContext';
+import LoginWelcomeToast from './src/components/LoginWelcomeToast';
 
 const { store, persistor, runSaga } = configureAppStore();
 runSaga(rootSaga);
@@ -22,10 +24,13 @@ const App: React.FC = () => {
         }
         persistor={persistor}
       >
-        <View style={{ flex: 1 }}>
-          <AppNav />
-          <Toast config={toastConfig} />
-        </View>
+        <CartProvider>
+          <View style={{ flex: 1 }}>
+            <LoginWelcomeToast />
+            <AppNav />
+            <Toast config={toastConfig} />
+          </View>
+        </CartProvider>
       </PersistGate>
     </Provider>
   );
