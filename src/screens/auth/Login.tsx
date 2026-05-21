@@ -7,40 +7,25 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { IMG } from '../../utils';
-import { USER_LOGIN_COMPLETED } from '../../app/actions';
-import { userLogin } from '../../app/reducers/auth';
+import { IMG, ROUTES } from '../../utils';
+import { userGoogleLogin, userLogin } from '../../app/reducers/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomTextInput';
-import { GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import GoogleSignInButton from '../../components/GoogleSignInButton';
 import { _signInwithGoogle } from '../../utils/firebase';
 
-// rename into tsx
-// fix errors
-
-// const Login: React.FC = {} => {
-
-// }
-
 const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const dispatch = useDispatch();
   const { isLoading, isError, errorMessage } = useSelector(
     (state: any) => state.auth,
   );
 
-  // isloading:boolean;
-  // isError: boolean:
-  // data: {
-  //   status: boolean;
-  //   message: String;
-
-  // }
-  // (val: string)
-  // (val: number | string ) =>
+  const busy = isLoading || googleLoading;
 
   React.useEffect(() => {
     if (isError && errorMessage) {
@@ -49,25 +34,36 @@ const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
   }, [isError, errorMessage]);
 
   const handleLogin = () => {
-    if (username.trim() === '' || password.trim() === '') {
-      Alert.alert('Hold up!', 'Please enter your username and password.');
+    if (email.trim() === '' || password.trim() === '') {
+      Alert.alert('Hold up!', 'Please enter your email and password.');
       return;
     }
 
-    dispatch(userLogin({ username: username.trim(), password }));
+    dispatch(userLogin({ email: email.trim(), password }));
   };
 
   const handleGoogleLogin = async () => {
-    const result = await _signInwithGoogle();
-    if (result.ok) {
-      dispatch({
-        type: USER_LOGIN_COMPLETED,
-        payload: { provider: 'google', user: result.userInfo },
-      });
+    if (busy) {
       return;
     }
-    if (!result.cancelled) {
-      Alert.alert('Google sign-in', result.message);
+
+    setGoogleLoading(true);
+
+    try {
+      const result = await _signInwithGoogle();
+      if (result.ok) {
+        dispatch(userGoogleLogin({ idToken: result.idToken }));
+        return;
+      }
+      if (!result.cancelled) {
+        Alert.alert('Google sign-in', result.message);
+      }
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Google sign-in failed';
+      Alert.alert('Google sign-in', message);
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -79,11 +75,12 @@ const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       <View style={styles.card}>
         <CustomTextInput
-          label="Username"
-          value={username}
-          onChangeText={setUsername}
-          editable={!isLoading}
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          editable={!busy}
           autoCapitalize="none"
+          keyboardType="email-address"
         />
 
         <CustomTextInput
@@ -91,25 +88,34 @@ const Login: React.FC<{ navigation: any }> = ({ navigation }) => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          editable={!isLoading}
+          editable={!busy}
         />
 
         <CustomButton
           label="Log In"
           onPress={handleLogin}
           loading={isLoading}
+          disabled={googleLoading}
         />
 
-        <GoogleSigninButton
-          style={styles.googleSignInButton}
-          size={GoogleSigninButton.Size.Standard}
-          color={GoogleSigninButton.Color.Light}
+        <View style={styles.dividerRow}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>or</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <GoogleSignInButton
           onPress={handleGoogleLogin}
+          loading={googleLoading}
+          disabled={isLoading}
         />
 
         <View style={styles.footerInline}>
           <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(ROUTES.REGISTER)}
+            disabled={busy}
+          >
             <Text style={styles.linkText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
@@ -140,11 +146,10 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     textAlign: 'center',
   },
-  footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 30 },
   footerInline: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 12,
+    marginTop: 20,
   },
   footerText: { color: '#666', textAlign: 'center' },
   linkText: { color: '#007AFF', fontWeight: 'bold' },
@@ -168,7 +173,20 @@ const styles = StyleSheet.create({
     maxWidth: 420,
     alignSelf: 'center',
   },
-  googleSignInButton: {
-    marginTop: 10,
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 4,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#e6e6e6',
+  },
+  dividerText: {
+    marginHorizontal: 12,
+    color: '#999',
+    fontSize: 14,
   },
 });

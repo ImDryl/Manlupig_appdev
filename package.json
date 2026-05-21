@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "reverse": "adb reverse tcp:8000 tcp:8000",
+    "preandroid": "adb reverse tcp:8000 tcp:8000",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",

@@ -5,12 +5,16 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Alert,
 } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { IMG } from '../../utils';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomTextInput';
+import { resetRegister, userRegister } from '../../app/reducers/auth';
+import type { RootState } from '../../app/reducers';
 
 type AuthStackParamList = {
   Login: undefined;
@@ -23,14 +27,73 @@ type RegisterProps = {
   navigation: RegisterNavigationProp;
 };
 
+const MIN_PASSWORD_LENGTH = 6;
+
 export default function Register({ navigation }: RegisterProps) {
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const dispatch = useDispatch();
+  const {
+    isRegistering,
+    isRegisterSuccess,
+    registerError,
+    registerMessage,
+  } = useSelector((state: RootState) => state.auth);
+
+  React.useEffect(() => {
+    if (registerError) {
+      Alert.alert('Sign Up Failed', registerError);
+    }
+  }, [registerError]);
+
+  React.useEffect(() => {
+    if (isRegisterSuccess && registerMessage) {
+      Alert.alert('Account Created', registerMessage, [
+        {
+          text: 'Go to Login',
+          onPress: () => {
+            dispatch(resetRegister());
+            navigation.navigate('Login');
+          },
+        },
+      ]);
+    }
+  }, [isRegisterSuccess, registerMessage, dispatch, navigation]);
+
+  React.useEffect(() => {
+    return () => {
+      dispatch(resetRegister());
+    };
+  }, [dispatch]);
 
   const handleRegister = () => {
-    console.log('Registering:', name);
-    navigation.navigate('Login');
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !password || !confirmPassword) {
+      Alert.alert('Hold up!', 'Please fill in email and both password fields.');
+      return;
+    }
+
+    if (!trimmedEmail.includes('@')) {
+      Alert.alert('Invalid email', 'Please enter a valid email address.');
+      return;
+    }
+
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      Alert.alert(
+        'Weak password',
+        `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Password mismatch', 'Passwords do not match.');
+      return;
+    }
+
+    dispatch(userRegister({ email: trimmedEmail, password }));
   };
 
   return (
@@ -41,17 +104,12 @@ export default function Register({ navigation }: RegisterProps) {
 
       <View style={styles.card}>
         <CustomTextInput
-          label="Full Name"
-          value={name}
-          onChangeText={setName}
-        />
-
-        <CustomTextInput
           label="Email"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+          editable={!isRegistering}
         />
 
         <CustomTextInput
@@ -59,17 +117,34 @@ export default function Register({ navigation }: RegisterProps) {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          editable={!isRegistering}
         />
+
+        <CustomTextInput
+          label="Confirm Password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+          editable={!isRegistering}
+        />
+
+        <Text style={styles.hint}>
+          App sign-up is verified automatically. You can log in right away.
+        </Text>
 
         <CustomButton
           label="Sign Up"
           onPress={handleRegister}
+          loading={isRegistering}
           containerStyle={styles.registerButton}
         />
 
         <View style={styles.footerInline}>
           <Text style={styles.footerText}>Already have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Login')}
+            disabled={isRegistering}
+          >
             <Text style={styles.linkText}>Log In</Text>
           </TouchableOpacity>
         </View>
@@ -91,12 +166,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     color: '#333',
     marginBottom: 5,
+    textAlign: 'center',
   },
-  subHeader: { fontSize: 16, color: '#666', marginBottom: 40 },
+  subHeader: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 40,
+    textAlign: 'center',
+  },
+  hint: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 8,
+    marginBottom: 4,
+    textAlign: 'center',
+  },
   registerButton: {
     marginTop: 8,
   },
-  footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 30 },
   footerInline: {
     flexDirection: 'row',
     justifyContent: 'center',

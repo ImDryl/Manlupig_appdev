@@ -3,6 +3,7 @@ import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { IMG } from '../utils';
 import { resetLogin } from '../app/reducers/auth';
+import { signOutGoogle } from '../utils/firebase';
 
 const ProfileScreen: React.FC = () => {
   const dispatch = useDispatch();
@@ -12,7 +13,8 @@ const ProfileScreen: React.FC = () => {
       { text: 'Cancel', onPress: () => {}, style: 'cancel' },
       {
         text: 'Logout',
-        onPress: () => {
+        onPress: async () => {
+          await signOutGoogle();
           dispatch(resetLogin());
         },
         style: 'destructive',

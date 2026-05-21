@@ -1,13 +1,24 @@
 import {
+  USER_GOOGLE_LOGIN,
   USER_LOGIN,
   USER_LOGIN_COMPLETED,
   USER_LOGIN_ERROR,
   USER_LOGIN_REQUEST,
   USER_LOGIN_RESET,
+  USER_REGISTER,
+  USER_REGISTER_COMPLETED,
+  USER_REGISTER_ERROR,
+  USER_REGISTER_REQUEST,
+  USER_REGISTER_RESET,
   type AuthAction,
   type LoginPayload,
+  type RegisterPayload,
+  type GoogleLoginPayload,
+  type UserGoogleLoginAction,
   type UserLoginAction,
   type UserLoginResetAction,
+  type UserRegisterAction,
+  type UserRegisterResetAction,
 } from '../actions';
 
 export type AuthState = {
@@ -15,6 +26,10 @@ export type AuthState = {
   isLoading: boolean;
   isError: boolean;
   errorMessage: string | null;
+  isRegistering: boolean;
+  isRegisterSuccess: boolean;
+  registerError: string | null;
+  registerMessage: string | null;
 };
 
 const INITIAL_STATE: AuthState = {
@@ -22,6 +37,10 @@ const INITIAL_STATE: AuthState = {
   isLoading: false,
   isError: false,
   errorMessage: null,
+  isRegistering: false,
+  isRegisterSuccess: false,
+  registerError: null,
+  registerMessage: null,
 };
 
 export default function authReducer(
@@ -57,7 +76,49 @@ export default function authReducer(
       };
 
     case USER_LOGIN_RESET:
-      return INITIAL_STATE;
+      return {
+        ...INITIAL_STATE,
+        isRegistering: state.isRegistering,
+        isRegisterSuccess: state.isRegisterSuccess,
+        registerError: state.registerError,
+        registerMessage: state.registerMessage,
+      };
+
+    case USER_REGISTER_REQUEST:
+      return {
+        ...state,
+        isRegistering: true,
+        isRegisterSuccess: false,
+        registerError: null,
+        registerMessage: null,
+      };
+
+    case USER_REGISTER_COMPLETED:
+      return {
+        ...state,
+        isRegistering: false,
+        isRegisterSuccess: true,
+        registerError: null,
+        registerMessage: action.payload.message,
+      };
+
+    case USER_REGISTER_ERROR:
+      return {
+        ...state,
+        isRegistering: false,
+        isRegisterSuccess: false,
+        registerError: action.payload || 'Registration failed',
+        registerMessage: null,
+      };
+
+    case USER_REGISTER_RESET:
+      return {
+        ...state,
+        isRegistering: false,
+        isRegisterSuccess: false,
+        registerError: null,
+        registerMessage: null,
+      };
 
     default:
       return state;
@@ -69,6 +130,22 @@ export const userLogin = (payload: LoginPayload): UserLoginAction => ({
   payload,
 });
 
+export const userGoogleLogin = (
+  payload: GoogleLoginPayload,
+): UserGoogleLoginAction => ({
+  type: USER_GOOGLE_LOGIN,
+  payload,
+});
+
+export const userRegister = (payload: RegisterPayload): UserRegisterAction => ({
+  type: USER_REGISTER,
+  payload,
+});
+
 export const resetLogin = (): UserLoginResetAction => ({
   type: USER_LOGIN_RESET,
+});
+
+export const resetRegister = (): UserRegisterResetAction => ({
+  type: USER_REGISTER_RESET,
 });

@@ -37,18 +37,38 @@ function googleErrorMessage(error: unknown): string {
 }
 
 export type GoogleSignInResult =
-  | { ok: true; userInfo: User }
+  | { ok: true; userInfo: User; idToken: string }
   | { ok: false; cancelled: true }
   | { ok: false; cancelled: false; message: string };
+
+export async function signOutGoogle(): Promise<void> {
+  try {
+    await GoogleSignin.signOut();
+  } catch {
+    // No active Google session — safe to ignore.
+  }
+}
 
 export async function _signInwithGoogle(): Promise<GoogleSignInResult> {
   try {
     await GoogleSignin.hasPlayServices({
       showPlayServicesUpdateDialog: true,
     });
+    // Clear cached Google session so the account picker is shown instead of
+    // silently reusing the last signed-in account on the device.
+    await signOutGoogle();
     const response = await GoogleSignin.signIn();
     if (isSuccessResponse(response)) {
-      return { ok: true, userInfo: response.data };
+      const tokens = await GoogleSignin.getTokens();
+      if (!tokens.idToken) {
+        return {
+          ok: false,
+          cancelled: false,
+          message:
+            'Google did not return an ID token. Check webClientId in firebase.ts and your Firebase debug SHA-1.',
+        };
+      }
+      return { ok: true, userInfo: response.data, idToken: tokens.idToken };
     }
     return { ok: false, cancelled: true };
   } catch (error) {
